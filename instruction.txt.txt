@@ -1,0 +1,8 @@
+- Zaznamy z dataloger.txt
+
+1.) v:
+	- zistuje stav suboru => ci je otvereny
+	- ak nie => otvori => ak zlyha, printf("Neotvoreny subor\n")
+	- ak bol otvoreny, zistuje sa pritomnost dyn. polí, kt sa tvoria
+	v prikaze n
+	-
