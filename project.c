@@ -67,12 +67,12 @@ void n(FILE** fptr, int* pocet_zaznamov, char*** id, char*** pozicia, char*** ve
         printf("Neotvorený subor.");
         exit(1);
     }else{
-        int n_of_scanned, i;
+        int n_of_scanned = 0, i;
         char* data_storage = (char*)calloc(50, sizeof(char)*10);
         while (1)
            {
                 i++;
-                n_of_scanned = fscanf(*fptr, "%s", data_storage);
+                n_of_scanned = fscanf(&*fptr, "%s", data_storage);
                 if (n_of_scanned == -1)
                 {
                     break;
