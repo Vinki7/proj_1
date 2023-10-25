@@ -2,14 +2,6 @@
 #include <stdlib.h>
 
 void v(FILE** fptr, int* pocet_zaznamov, char** id){
-    /*
-    Najprv zistujeme stav pointeru na subor. 
-        - Ak subor nebol otvoreny, skusame ho otvorit
-            - Ak neuspesne, vypise sa text
-            - Ak uspesne, zistujeme status dynamickych polí - ich existenciu
-                - Ak existuju = bola volana funkcia n(), vypiseme ich obsah
-                - Ak neexistuju, vypiseme zaznamy zo suboru
-    */
     if (*fptr == NULL)
     {   
         *fptr = fopen("dataloger.txt", "r");
