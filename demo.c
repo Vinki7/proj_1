@@ -7,7 +7,7 @@ int main(void){
     values = (char**)malloc(sizeof(char*)*50);
     for (int i = 0; i < 50; i++)
     {
-        *values= (char*)malloc(sizeof(char)*50);
+        *(values+i)= (char*)malloc(sizeof(char)*50);
     }
     
     char* value = (char*)malloc(sizeof(char)*50);
