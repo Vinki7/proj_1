@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void v(FILE** fptr, int* pocet_zaznamov, char** id){
+void v(FILE** fptr, int* pocet_zaznamov, char** id, char** poz, char** velic, char** val, char** time, char** date){
     if (*fptr == NULL)
     {   
         *fptr = fopen("dataloger.txt", "r");
@@ -57,7 +57,7 @@ void v(FILE** fptr, int* pocet_zaznamov, char** id){
     }
 }
 
-void n(FILE* fptr, int* pocet_zaznamov, int pocet_hodnot, char** id){
+void n(FILE* fptr, int* pocet_zaznamov, int pocet_hodnot, char*** id, char*** poz, char*** velic, char*** val, char*** time, char*** date){
     if (fptr == NULL)
     {
         printf("Neotvorený subor.");
@@ -66,7 +66,7 @@ void n(FILE* fptr, int* pocet_zaznamov, int pocet_hodnot, char** id){
         fseek(fptr, 0, SEEK_SET);
         int n_of_scanned, i;
         char *data_storage = malloc(sizeof(char)*50);
-        id = (char**)malloc(sizeof*pocet_zaznamov);
+        *id = (char**)malloc(sizeof*pocet_zaznamov);
         for (int i = 0; i < *pocet_zaznamov; i++)
         {
             for (int j = 0; j < pocet_hodnot; j++)
@@ -75,7 +75,7 @@ void n(FILE* fptr, int* pocet_zaznamov, int pocet_hodnot, char** id){
                 switch (j)
                 {
                 case 0:
-                    id[j]=data_storage;
+                    *(*id+j)=data_storage;
                     break;
                 
                 default:
@@ -91,9 +91,9 @@ void n(FILE* fptr, int* pocet_zaznamov, int pocet_hodnot, char** id){
 int main(void){
     FILE *ptr_dataloger = NULL;
     int pocet_zaznamov = 1, pocet_hodnot = 6;
-    char** id = NULL;
+    char **id = NULL, **poz = NULL, **velic = NULL, **val = NULL, **time = NULL, **date = NULL;
 
-    v(&ptr_dataloger, &pocet_zaznamov, id);
-    n(ptr_dataloger, &pocet_zaznamov, pocet_hodnot, id);
+    v(&ptr_dataloger, &pocet_zaznamov, id, poz, velic, val, time, date);
+    n(ptr_dataloger, &pocet_zaznamov, pocet_hodnot, &id, &poz, &velic, &val, &time, &date);
     return 0;
 }
