@@ -88,13 +88,65 @@ void v(FILE** fptr, int pocet_zaznamov, char** id, char** poz, char** velic, cha
             }
         }
     }
+    fseek(*fptr, 0, SEEK_SET);
+}
+
+void dealokacia_polí(int pocet_zaznamov, char*** id, char*** poz, char*** velic, char*** val, char*** time, char*** date){
+    int i = 0, j = 0;
+    while (1)
+    {
+        j++;
+        if (i == pocet_zaznamov)
+        {
+            break;
+        }
+        switch (j)
+        {
+        case 1:
+            free((*id)[i]);
+            break;
+        
+        case 2:
+            free((*poz)[i]);
+            break;
+        case 3:
+            free((*velic)[i]);
+            break;
+
+        case 4:
+            free((*val)[i]);
+            break;
+
+        case 5:
+            free((*time)[i]);
+            break;
+
+        case 6:
+            free((*date)[i]);
+            i++;
+            j=0;
+            break;
+        }
+    }
+}
+
+
+void k(FILE **fptr, int pocet_zaznamov, char*** id, char*** poz, char*** velic, char*** val, char*** time, char*** date){
+    dealokacia_polí(pocet_zaznamov, id, poz, velic, val, time, date);
+    free(*id);
+    free(*poz);
+    free(*velic);
+    free(*val);
+    free(*time);
+    free(*date);
+    fclose(*fptr);
+    exit(1);
 }
 
 void n(FILE *fptr, int* pocet_zaznamov, int pocet_hodnot, char*** id, char*** poz, char*** velic, char*** val, char*** time, char*** date){
     if (fptr == NULL)
     {
         printf("Neotvoreny subor\n");
-        exit(1);
     }else{
         fseek(fptr, 0, SEEK_SET);
         char data_storage[50];
@@ -107,13 +159,18 @@ void n(FILE *fptr, int* pocet_zaznamov, int pocet_hodnot, char*** id, char*** po
                 break;
             }
             i++;
-            if (i == 6)
+            if (i == pocet_hodnot)
             {
                 j +=1 ;
                 i = 0;
             }
         }
         *pocet_zaznamov = j;
+        if (*id != NULL)
+        {
+            dealokacia_polí(*pocet_zaznamov, id, poz, velic, val, time, date);
+        }
+        
         fseek(fptr, 0, SEEK_SET);
         *id = (char**)malloc(sizeof(char*)*(*pocet_zaznamov));
         *poz = (char**)malloc(sizeof(char*)*(*pocet_zaznamov));
@@ -182,16 +239,44 @@ int main(void){
     FILE *ptr_dataloger = NULL;
     int pocet_zaznamov = 0, pocet_hodnot = 6;
     char **id = NULL, **poz = NULL, **velic = NULL, **val = NULL, **time = NULL, **date = NULL;
+    char prikaz;
+    printf("Zadajte príkaz:\n");
+    while (1)
+    {
+        scanf(" %c", &prikaz);
+        switch (prikaz)
+        {
+        case 'v':
+            v(&ptr_dataloger, pocet_zaznamov, id, poz, velic, val, time, date);
+            break;
+        
+        case 'n':
+            n(ptr_dataloger, &pocet_zaznamov, pocet_hodnot, &id, &poz, &velic, &val, &time, &date);
+            break;
 
-    v(&ptr_dataloger, pocet_zaznamov, id, poz, velic, val, time, date);
-    n(ptr_dataloger, &pocet_zaznamov, pocet_hodnot, &id, &poz, &velic, &val, &time, &date);
-    v(&ptr_dataloger, pocet_zaznamov, id, poz, velic, val, time, date);
+        case 'c':
+            /* code */
+            break;
 
-    free(id);
-    free(poz);
-    free(velic);
-    free(val);
-    free(time);
-    free(date);
+        case 's':
+            /* code */
+            break;
+
+        case 'h':
+            /* code */
+            break;
+        
+        case 'z':
+            /* code */
+            break;
+        
+        case 'k':
+            k(&ptr_dataloger, pocet_zaznamov, &id, &poz, &velic, &val, &time, &date);
+            break;
+        default:
+            printf("Zadali ste nedefinovaný príkaz, skúste to prosím znovu...\n");
+        }
+        printf("Zadajte ďalší príkaz...\n");
+    }
     return 0;
 }
