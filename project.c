@@ -131,7 +131,7 @@ void dealokacia_polí(int pocet_zaznamov, char*** id, char*** poz, char*** velic
 }
 
 
-void k(FILE **fptr, int pocet_zaznamov, char*** id, char*** poz, char*** velic, char*** val, char*** time, char*** date){
+void k(FILE **fptr_1, FILE** fptr_2, int pocet_zaznamov, char*** id, char*** poz, char*** velic, char*** val, char*** time, char*** date){
     dealokacia_polí(pocet_zaznamov, id, poz, velic, val, time, date);
     free(*id);
     free(*poz);
@@ -139,7 +139,8 @@ void k(FILE **fptr, int pocet_zaznamov, char*** id, char*** poz, char*** velic, 
     free(*val);
     free(*time);
     free(*date);
-    fclose(*fptr);
+    fclose(*fptr_1);
+    fclose(*fptr_2);
     exit(1);
 }
 
@@ -317,9 +318,71 @@ void c(FILE** fptr, int pocet_zaznamov, char** id, char** date){
     }
 }
 
+void s(FILE* fptr, int pocet_zaznamov, char** id, char** velic, char** poz, char** val, char** time, char** date){
+    /*
+    po aktivovani nacita ID |+
+    nacita vel |+
+    vytvori nove pole hodnot kde su zoradene ↑
+    vypise zoradene hodnoty do suboru s nazvom vystup_S.txt v tvare:
+    Ukážka vstupu (korektný vstup):
+    A111a RM
+    Ukážka txt súboru:
+    202310081015 135.36 000 +48.1734 +19.4367
+    202310081025 185.36000 +48.1784 +19.4567
+    202310101055 125.36000 +48.1634 +19.4967 
+
+    ak polia neboli vytvorené - hlaska |+
+    ak pre vstup neex. zaznam - hlaska
+    ak sa nepodari otvorit/zatvorit subor - hlaska |+
+    */
+    char input_id[6], input_velic[3];
+    int pocet_nacitanych = 0;
+    char** sorted = (char**)malloc(sizeof(char*)*pocet_zaznamov);
+    char** assist_array = (char**)malloc(sizeof(char*)*2);
+    fptr = fopen("vystup_S.txt", "w");
+    if (fptr == NULL)
+    {
+        printf("Pre dany vstup nie je vytvoreny txt subor");
+        return;
+    }
+    if (id==NULL)
+    {
+        printf("Polia nie su vytvorene");
+        return;
+    }
+    printf("Zadajte ID. mer. modulu a typ mer. veliciny, oddelte ich medzerou\n");
+    scanf("%s %s", input_id, input_velic);
+
+    //teraz treba urobit nahratie zvolenych dat do sorted, 
+    //ak neboli ziadne data prenesene, do txt sa zapise "-", do terminalu hlaska - Pre dany vstup neexistuju zaznamy.
+    //inak sorting algorithm cez polia
+    //nasledna iteracia sorted a vypis do suboru, sorting podla val
+    //pri ukladani hodnot je treba rozdelit suradnice na lat a long aj so znamienkom
+
+    //cistenie polí na konci funkcie
+    for (int i = 0; i < pocet_zaznamov; i++)
+    {
+        free(sorted[i]);
+    }
+    free(sorted);
+    for (int i = 0; i < 2; i++)
+    {
+        free(assist_array[i]);
+    }
+    free(assist_array);
+    //uzatvorenie txt
+    if (fclose(fptr) == EOF)
+    {
+        printf("Pre dany vstup nie je vytvoreny txt subor");
+    }
+    
+
+}
+
 int main(void){
     FILE *ptr_dataloger = NULL;
     FILE *ptr_ciachovanie = NULL;
+    FILE *ptr_sort = NULL;
 
     int pocet_zaznamov = 0, pocet_hodnot = 6;
     char **id = NULL, **poz = NULL, **velic = NULL, **val = NULL, **time = NULL, **date = NULL;
@@ -355,7 +418,7 @@ int main(void){
             break;
         
         case 'k':
-            k(&ptr_dataloger, pocet_zaznamov, &id, &poz, &velic, &val, &time, &date);
+            k(&ptr_dataloger, &ptr_ciachovanie, pocet_zaznamov, &id, &poz, &velic, &val, &time, &date);
             break;
         default:
             printf("Zadali ste nedefinovaný príkaz, skúste to prosím znovu...\n");
