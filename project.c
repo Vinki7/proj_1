@@ -235,8 +235,88 @@ void n(FILE *fptr, int* pocet_zaznamov, int pocet_hodnot, char*** id, char*** po
     }
 }
 
+void date_split(char *string_date, int* year, int* month, int* day){
+    *year = atoi(string_date)/10000;
+    *month = (atoi(string_date)%10000)/100;
+    *day = atoi(string_date)%100;
+}
+
+void c(FILE** fptr, int pocet_zaznamov, char** id, char** date){
+    if (id == NULL)
+    {
+        printf("Polia nie su vytvorene.\n");
+    }else{
+        int i = 0, j = 0, match = 1, rozdiel_m, ciach[3], stored[3];
+        float assist_var;
+        char datastorage[50], id_storage[50];
+        printf("Zadajte číslo reprezentujúce rozdiel mesiacov ciachovaní a v meraní...\n");
+        scanf("%d", &rozdiel_m);
+        fseek(*fptr, 0, SEEK_SET);
+
+        if (*fptr == NULL)
+        {
+            *fptr = fopen("ciachovanie.txt", "r");
+            if (*fptr == NULL)
+            {
+                printf("Subor sa nepodarilo otvoriť...\n");
+                return;
+            }
+        }
+        
+        while (1)
+        {
+            match = 0;
+            if (fscanf(*fptr, "%s", datastorage) == -1)
+            {
+                break;
+            }
+            
+            for (i = 0; i < pocet_zaznamov; i++)
+            {
+                if (strcmp(datastorage, "\n") == 0)
+                {
+                    break;
+                }
+                strcpy(id_storage, datastorage);
+                if (strcmp(id[i], datastorage) == 0)
+                {
+                    fscanf(*fptr, "%s", datastorage);
+                    date_split(datastorage, &ciach[0], &ciach[1], &ciach[2]);
+                    date_split(date[i], &stored[0], &stored[1], &stored[2]);
+
+                    if (stored[0]==ciach[0])
+                    {
+                        /* code */
+                    }
+                    
+
+                    printf("ID. mer. modulu [%s] má %d mesiacov po ciachovani\n", id[i]);
+                    match = 1;
+                    break;
+                }
+                
+            }
+            if (match == 0)
+            {
+                if (i==pocet_zaznamov)
+                {
+                    i--;
+                }
+                
+                printf("ID. mer. modulu [%s] nie je ciachovany\n", id_storage);
+                fscanf(*fptr, "%s", datastorage);
+                strcpy(datastorage, "");
+            }
+            
+        }
+        printf("Data su korektne\n");
+    }
+}
+
 int main(void){
     FILE *ptr_dataloger = NULL;
+    FILE *ptr_ciachovanie = NULL;
+
     int pocet_zaznamov = 0, pocet_hodnot = 6;
     char **id = NULL, **poz = NULL, **velic = NULL, **val = NULL, **time = NULL, **date = NULL;
     char prikaz;
@@ -255,7 +335,7 @@ int main(void){
             break;
 
         case 'c':
-            /* code */
+            c(&ptr_ciachovanie, pocet_zaznamov, id, date);
             break;
 
         case 's':
