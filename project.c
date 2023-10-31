@@ -283,20 +283,18 @@ void c(FILE** fptr, int pocet_zaznamov, char** id, char** date){
                     date_split(datastorage, &ciach[0], &ciach[1], &ciach[2]);
                     date_split(date[i], &stored[0], &stored[1], &stored[2]);//convert string zapisu na jednotlive ciselne hodnoty
 
-                    if (stored[0]==ciach[0])//porovnanie rokov
+                    if ((stored[0]==ciach[0])&&(stored[1]>ciach[1]))//porovnanie rokov a mesiacov
                     {
-                        if (stored[1]>ciach[1])//porovnanie mesiacov
+                        rozdiel_m = stored[1]-ciach[1];//odcitanie
+                        if (rozdiel_m > period)
                         {
-                            rozdiel_m = stored[1]-ciach[1];//odcitanie
-                            if (rozdiel_m > period)
-                            {
-                                printf("ID. mer. modulu [%s] má %d mesiacov po ciachovani\n", id[i], rozdiel_m);            
-                            }
+                            printf("ID. mer. modulu [%s] má %d mesiacov po ciachovani\n", id[i], rozdiel_m);            
                         }
                     }
                     if (stored[0]>ciach[0])
                     {
                         rozdiel_m = 12-ciach[1]+stored[1];
+                        printf("ID. mer. modulu [%s] má %d mesiacov po ciachovani\n", id[i], rozdiel_m);
                     }
                     match = 1;
                 }
