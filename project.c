@@ -242,15 +242,14 @@ void date_split(char *string_date, int* year, int* month, int* day){
 }
 
 void c(FILE** fptr, int pocet_zaznamov, char** id, char** date){
-    if (id == NULL)
+    if (id == NULL)//overenie existencie polí
     {
         printf("Polia nie su vytvorene.\n");
     }else{
-        int i = 0, j = 0, match = 1, rozdiel_m, ciach[3], stored[3];
-        float assist_var;
+        int i = 0, j = 0, match = 1, rozdiel_m, period, ciach[3], stored[3];
         char datastorage[50], id_storage[50];
         printf("Zadajte číslo reprezentujúce rozdiel mesiacov ciachovaní a v meraní...\n");
-        scanf("%d", &rozdiel_m);
+        scanf("%d", &period);
         fseek(*fptr, 0, SEEK_SET);
 
         if (*fptr == NULL)
@@ -263,36 +262,39 @@ void c(FILE** fptr, int pocet_zaznamov, char** id, char** date){
             }
         }
         
-        while (1)
+        while (1)//zakladny cyklus
         {
             match = 0;
-            if (fscanf(*fptr, "%s", datastorage) == -1)
+            if (fscanf(*fptr, "%s", datastorage) == -1)//overenie - koniec suboru
             {
                 break;
             }
-            
-            for (i = 0; i < pocet_zaznamov; i++)
+            strcpy(id_storage, datastorage);//uchovanie id z ciachovania v array
+            fscanf(*fptr, "%s", datastorage);//naskenovanie datumu z ciach.
+            for (i = 0; i < pocet_zaznamov; i++)//iterovaci cyklus - postupne zvysuje i reprezentujuci index a nasledne je hodnota i vkladana
             {
-                if (strcmp(datastorage, "\n") == 0)
+                if (strcmp(*id, "\n") == 0)//porovnanie - ak sa nacitany riadok rovna prazdnemu riadku
                 {
                     break;
                 }
-                strcpy(id_storage, datastorage);
-                if (strcmp(id[i], datastorage) == 0)
+                
+                if (strcmp(id[i], id_storage) == 0)//porovnanie medzi id z pola a ciach. id, ak su identicke, vykona sa blok
                 {
-                    fscanf(*fptr, "%s", datastorage);
                     date_split(datastorage, &ciach[0], &ciach[1], &ciach[2]);
-                    date_split(date[i], &stored[0], &stored[1], &stored[2]);
+                    date_split(date[i], &stored[0], &stored[1], &stored[2]);//convert string zapisu na jednotlive ciselne hodnoty
 
-                    if (stored[0]==ciach[0])
+                    if (stored[0]==ciach[0])//porovnanie rokov
                     {
-                        /* code */
+                        if (stored[1]>ciach[1])//porovnanie mesiacov
+                        {
+                            rozdiel_m = stored[1]-ciach[1];//odcitanie
+                            if (rozdiel_m > period)
+                            {
+                                printf("ID. mer. modulu [%s] má %d mesiacov po ciachovani\n", id[i], rozdiel_m);            
+                            }
+                        }
                     }
-                    
-
-                    printf("ID. mer. modulu [%s] má %d mesiacov po ciachovani\n", id[i]);
                     match = 1;
-                    break;
                 }
                 
             }
