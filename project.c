@@ -294,6 +294,10 @@ void c(FILE** fptr, int pocet_zaznamov, char** id, char** date){
                             }
                         }
                     }
+                    if (stored[0]>ciach[0])
+                    {
+                        rozdiel_m = 12-ciach[1]+stored[1];
+                    }
                     match = 1;
                 }
                 
