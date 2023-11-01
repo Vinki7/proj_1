@@ -253,8 +253,9 @@ void c(FILE** fptr, int pocet_zaznamov, char** id, char** date){
     {
         printf("Polia nie su vytvorene.\n");
     }else{
-        int i = 0, j = 0, match = 1, rozdiel_m, period, ciach[3], stored[3];
+        int i = 0, j = 0, match = 1, rozdiel_m, period, ciach[3], stored[3], ciach_id_count = 0, zaciatok_hladania = 0;
         char datastorage[50], id_storage[50];
+        char** ciach_id = (char**)malloc(sizeof(char*)*pocet_zaznamov); //id ciachovania
         printf("Zadajte číslo reprezentujúce rozdiel mesiacov ciachovaní a v meraní...\n");
         scanf("%d", &period);
         fseek(*fptr, 0, SEEK_SET);
@@ -277,6 +278,8 @@ void c(FILE** fptr, int pocet_zaznamov, char** id, char** date){
                 break;
             }
             strcpy(id_storage, datastorage);//uchovanie id z ciachovania v array
+            ciach_id[ciach_id_count] = strdup(id_storage);
+            ciach_id_count++;
             fscanf(*fptr, "%s", datastorage);//naskenovanie datumu z ciach.
             for (i = 0; i < pocet_zaznamov; i++)//iterovaci cyklus - postupne zvysuje i reprezentujuci index a nasledne je hodnota i vkladana
             {
@@ -305,7 +308,6 @@ void c(FILE** fptr, int pocet_zaznamov, char** id, char** date){
                     }
                     match = 1;
                 }
-                
             }
             if (match == 0)
             {
@@ -313,13 +315,35 @@ void c(FILE** fptr, int pocet_zaznamov, char** id, char** date){
                 {
                     i--;
                 }
-                
-                printf("ID. mer. modulu [%s] nie je ciachovany\n", id_storage);
                 fscanf(*fptr, "%s", datastorage);
                 strcpy(datastorage, "");
             }
-            
         }
+        match = 0;
+        i = 0;
+        while (1)
+        {
+            if (i == pocet_zaznamov)
+            {
+                break;
+            }
+            for ( j = 0; j < ciach_id_count; j++)
+            {
+                if (strcmp(ciach_id[j], id[i]) == 0)
+                {
+                    match = 1;
+                    break;
+                }
+            }
+            if (match != 1)
+            {
+                printf("ID. mer. modulu [%s] nie je ciachovany\n", id[i]);
+            }
+            i++;
+            match = 0;
+        }
+        
+        
         printf("Data su korektne\n");
     }
 }
