@@ -385,18 +385,20 @@ void s(FILE* fptr, int pocet_zaznamov, char** id, char** velic, char** poz, char
 
     for (int i = 0; i < pocet_zaznamov; i++)//nacitanie dat do sorted[]
     {
-        if (strcmp(velic[i], input_velic)==0)
+        if (strcmp(input_id, id[i]) == 0)
         {
-            sorted[0][j] = id[i];
-            sorted[1][j] = poz[i];
-            sorted[2][j] = velic[i];
-            sorted[3][j] = val[i];
-            sorted[4][j] = time[i];
-            sorted[5][j] = date[i];
-            j++;
-            pocet_nacitanych++;
+            if (strcmp(velic[i], input_velic)==0)
+            {
+                sorted[0][j] = id[i];
+                sorted[1][j] = poz[i];
+                sorted[2][j] = velic[i];
+                sorted[3][j] = val[i];
+                sorted[4][j] = time[i];
+                sorted[5][j] = date[i];
+                j++;
+                pocet_nacitanych++;
+            }
         }
-        
     }
     if (pocet_nacitanych == 0)
     {
@@ -427,11 +429,22 @@ void s(FILE* fptr, int pocet_zaznamov, char** id, char** velic, char** poz, char
                 }else if (day[0]>day[1])
                 {
                     nova_pozicia = (j+1);
+                }else if (hour[0] > hour[1])
+                {
+                    nova_pozicia = (j+1);
+                }else if (minute[0]>minute[1])
+                {
+                    nova_pozicia = (j+1);
                 }
-                
-                
-                
             }
+            if (nova_pozicia == zaciatok)
+            {
+                zaciatok++;
+            }else{
+
+            }
+
+            
             
         }
         
