@@ -377,19 +377,23 @@ void s(FILE* fptr, int pocet_zaznamov, char** id, char** velic, char** poz, char
         //sorting algorythm due to date and time
         j = 0;
         int year[2], month[2], day[2];
+        int pocitadlo = pocet_nacitanych - 1;
         //bubble sorting algorythm
-        for (int i = 0; i < (pocet_nacitanych-1); i++)
+        for (int i = 0; i < (pocitadlo); i++)//hlavny cyklus, iterujeme sorted polom
+        //na zaciatku celym, potom uz vdosledku toho, ze najvacsie hodnoty preplavaju navrch vzdy -1
         {
-            date_split(sorted[5][i], &year[0], &month[0], &day[0]);
-            for (int j = 0; j < (pocet_nacitanych-1); j++)
+            date_split(sorted[5][i], &year[0], &month[0], &day[0]);//priradenie hodnot do jednotlivych zoznamov
+            int pomocny_index = i; //vyuzijeme pri zvysovani indexu pri radeni
+            for (int j = 0; j < (pocitadlo); j++)
             {
                 date_split(sorted[5][j+1], &year[1], &month[1], &day[1]);
                 if (year[0]>year[1])
                 {
+                    
                     for (int n = 0; n < 6; n++)
                     {
-                        assist_array[n][0] = strdup(sorted[5][i]);
-                        strcpy(sorted[]);//treba dorobit vymenu miesta a premysliet si ten system vymeny
+                        assist_array[n][0] = strdup(sorted[n][pomocny_index]);
+                        strcpy(sorted[n][pomocny_index], assist_array);//treba dorobit vymenu miesta a premysliet si ten system vymeny
                         //pravdepodobne budem fungovat s j premennou a len to swapovat podla toho, datum mi ostava stale v prvom cykle
                     }
                     
