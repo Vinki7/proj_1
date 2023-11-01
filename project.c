@@ -243,6 +243,11 @@ void date_split(char *string_date, int* year, int* month, int* day){
     *day = atoi(string_date)%100;
 }
 
+void time_split(char *string_time, int* hour, int* minute){
+    *hour = atoi(string_time)/100;
+    *minute = atoi(string_time)%100;
+}
+
 void c(FILE** fptr, int pocet_zaznamov, char** id, char** date){
     if (id == NULL)//overenie existencie polí
     {
@@ -376,28 +381,31 @@ void s(FILE* fptr, int pocet_zaznamov, char** id, char** velic, char** poz, char
     }else{
         //sorting algorythm due to date and time
         j = 0;
-        int year[2], month[2], day[2];
-        int pocitadlo = pocet_nacitanych - 1;
+        int year[2], month[2], day[2], hour[2], minute[2];
+        int pocitadlo = pocet_nacitanych - 1, zaciatok = 0;//zaciatok sa mení, ak pociatocny udaj nebol vacsi nez prvy porovnavany udaj
+        int nova_pozicia;
         //bubble sorting algorythm
-        for (int i = 0; i < (pocitadlo); i++)//hlavny cyklus, iterujeme sorted polom
-        //na zaciatku celym, potom uz vdosledku toho, ze najvacsie hodnoty preplavaju navrch vzdy -1
+        for (int i = 0; i < pocitadlo; i++)//hlavny cyklus, iterujeme sorted polom
         {
-            date_split(sorted[5][i], &year[0], &month[0], &day[0]);//priradenie hodnot do jednotlivych zoznamov
-            int pomocny_index = i; //vyuzijeme pri zvysovani indexu pri radeni
-            for (int j = 0; j < (pocitadlo); j++)
+            nova_pozicia = 0;
+            date_split(sorted[5][zaciatok], &year[0], &month[0], &day[0]);//priradenie hodnot do jednotlivych zoznamov
+            time_split(sorted[4][zaciatok], &hour[0], &minute[0]);
+            for (int j = zaciatok; j < pocitadlo; j++)
             {
                 date_split(sorted[5][j+1], &year[1], &month[1], &day[1]);
+                time_split(sorted[5][j+1], &hour[1], &minute[1]);
                 if (year[0]>year[1])
                 {
-                    
-                    for (int n = 0; n < 6; n++)
-                    {
-                        assist_array[n][0] = strdup(sorted[n][pomocny_index]);
-                        strcpy(sorted[n][pomocny_index], assist_array);//treba dorobit vymenu miesta a premysliet si ten system vymeny
-                        //pravdepodobne budem fungovat s j premennou a len to swapovat podla toho, datum mi ostava stale v prvom cykle
-                    }
-                    
+                    nova_pozicia = (j+1);
+                }else if (month[0]>month[1])
+                {
+                    nova_pozicia = (j+1);
+                }else if (day[0]>day[1])
+                {
+                    nova_pozicia = (j+1);
                 }
+                
+                
                 
             }
             
