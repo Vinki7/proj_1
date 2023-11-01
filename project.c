@@ -324,22 +324,15 @@ void s(FILE* fptr, int pocet_zaznamov, char** id, char** velic, char** poz, char
     po aktivovani nacita ID |+
     nacita vel |+
     vytvori nove pole hodnot kde su zoradene ↑
-    vypise zoradene hodnoty do suboru s nazvom vystup_S.txt v tvare:
-    Ukážka vstupu (korektný vstup):
-    A111a RM
-    Ukážka txt súboru:
-    202310081015 135.36 000 +48.1734 +19.4367
-    202310081025 185.36000 +48.1784 +19.4567
-    202310101055 125.36000 +48.1634 +19.4967 
-
+    vypise zoradene hodnoty do suboru s nazvom vystup_S.txt v tvare: |+
     ak polia neboli vytvorené - hlaska |+
-    ak pre vstup neex. zaznam - hlaska
+    ak pre vstup neex. zaznam - hlaska |+
     ak sa nepodari otvorit/zatvorit subor - hlaska |+
     */
     char input_id[6], input_velic[3];
-    int pocet_nacitanych = 0, j=0;
+    int pocet_nacitanych = 0, j = 0;
     char*** sorted = (char***)malloc(sizeof(char**)*6);
-    char*** assist_array = (char***)malloc(sizeof(char**));
+    char*** assist_array = (char***)malloc(sizeof(char**)*6);
     fptr = fopen("vystup_S.txt", "w");
     if (fptr == NULL)
     {
@@ -361,7 +354,6 @@ void s(FILE* fptr, int pocet_zaznamov, char** id, char** velic, char** poz, char
         sorted[i]=(char**)malloc(sizeof(char*)*pocet_zaznamov);
     }
 
-
     for (int i = 0; i < pocet_zaznamov; i++)//nacitanie dat do sorted[]
     {
         if (strcmp(velic[i], input_velic)==0)
@@ -382,7 +374,30 @@ void s(FILE* fptr, int pocet_zaznamov, char** id, char** velic, char** poz, char
         fprintf(fptr, "%c", 'c');
         printf("Pre dany vstup neexistuju zaznamy\n");
     }else{
-        //sorting algorythm
+        //sorting algorythm due to date and time
+        j = 0;
+        int year[2], month[2], day[2];
+        //bubble sorting algorythm
+        for (int i = 0; i < (pocet_nacitanych-1); i++)
+        {
+            date_split(sorted[5][i], &year[0], &month[0], &day[0]);
+            for (int j = 0; j < (pocet_nacitanych-1); j++)
+            {
+                date_split(sorted[5][j+1], &year[1], &month[1], &day[1]);
+                if (year[0]>year[1])
+                {
+                    for (int n = 0; n < 6; n++)
+                    {
+                        assist_array[n][0] = strdup(sorted[5][i]);
+                        strcpy(sorted[]);//treba dorobit vymenu miesta a premysliet si ten system vymeny
+                        //pravdepodobne budem fungovat s j premennou a len to swapovat podla toho, datum mi ostava stale v prvom cykle
+                    }
+                    
+                }
+                
+            }
+            
+        }
         
         for (int i = 0; i < pocet_nacitanych; i++)//vypis do suboru
         {
