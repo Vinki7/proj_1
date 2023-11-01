@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 void v(FILE** fptr, int pocet_zaznamov, char** id, char** poz, char** velic, char** val, char** time, char** date){
     if (*fptr == NULL)
@@ -336,9 +337,9 @@ void s(FILE* fptr, int pocet_zaznamov, char** id, char** velic, char** poz, char
     ak sa nepodari otvorit/zatvorit subor - hlaska |+
     */
     char input_id[6], input_velic[3];
-    int pocet_nacitanych = 0;
-    char** sorted = (char**)malloc(sizeof(char*)*pocet_zaznamov);
-    char** assist_array = (char**)malloc(sizeof(char*)*2);
+    int pocet_nacitanych = 0, j=0;
+    char*** sorted = (char***)malloc(sizeof(char**)*6);
+    char*** assist_array = (char***)malloc(sizeof(char**));
     fptr = fopen("vystup_S.txt", "w");
     if (fptr == NULL)
     {
@@ -350,14 +351,55 @@ void s(FILE* fptr, int pocet_zaznamov, char** id, char** velic, char** poz, char
         printf("Polia nie su vytvorene");
         return;
     }
-    printf("Zadajte ID. mer. modulu a typ mer. veliciny, oddelte ich medzerou\n");
+    printf("Zadajte ID. mer. modulu a  typ mer. veliciny, oddelte ich medzerou\n");
     scanf("%s %s", input_id, input_velic);
+    input_velic[0] = toupper(input_velic[0]);
+    input_velic[1] = toupper(input_velic[1]);
+    
+    for (int i = 0; i < 6; i++)
+    {
+        sorted[i]=(char**)malloc(sizeof(char*)*pocet_zaznamov);
+    }
 
-    //teraz treba urobit nahratie zvolenych dat do sorted, 
-    //ak neboli ziadne data prenesene, do txt sa zapise "-", do terminalu hlaska - Pre dany vstup neexistuju zaznamy.
-    //inak sorting algorithm cez polia
-    //nasledna iteracia sorted a vypis do suboru, sorting podla val
-    //pri ukladani hodnot je treba rozdelit suradnice na lat a long aj so znamienkom
+
+    for (int i = 0; i < pocet_zaznamov; i++)//nacitanie dat do sorted[]
+    {
+        if (strcmp(velic[i], input_velic)==0)
+        {
+            sorted[0][j] = id[i];
+            sorted[1][j] = poz[i];
+            sorted[2][j] = velic[i];
+            sorted[3][j] = val[i];
+            sorted[4][j] = time[i];
+            sorted[5][j] = date[i];
+            j++;
+            pocet_nacitanych++;
+        }
+        
+    }
+    if (pocet_nacitanych == 0)
+    {
+        fprintf(fptr, "%c", 'c');
+        printf("Pre dany vstup neexistuju zaznamy\n");
+    }else{
+        //sorting algorythm
+        
+        for (int i = 0; i < pocet_nacitanych; i++)//vypis do suboru
+        {
+            //delenie pozicie na lat a long
+            char lat[8], lon[8];
+            for (int j = 0; j < 7; j++)
+            {
+                lat[j] = (sorted[1][i])[j];
+            }
+            for (int j = 7; j < 14; j++)
+            {
+                lon[j] = (sorted[1][i])[j];
+            }
+            fprintf(fptr, "%s%s\t%.5lf\t%s\t%s", sorted[5][i], sorted[4][i], atof(sorted[3][i]), lat, lon);//dokonci...
+        }
+        
+    }
 
     //cistenie polí na konci funkcie
     for (int i = 0; i < pocet_zaznamov; i++)
@@ -370,6 +412,7 @@ void s(FILE* fptr, int pocet_zaznamov, char** id, char** velic, char** poz, char
         free(assist_array[i]);
     }
     free(assist_array);
+    free(sorted);
     //uzatvorenie txt
     if (fclose(fptr) == EOF)
     {
