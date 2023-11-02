@@ -92,59 +92,6 @@ void v(FILE** fptr, int pocet_zaznamov, char** id, char** poz, char** velic, cha
     fseek(*fptr, 0, SEEK_SET);
 }
 
-void dealokacia_polí(int pocet_zaznamov, char*** id, char*** poz, char*** velic, char*** val, char*** time, char*** date){
-    int i = 0, j = 0;
-    while (1)
-    {
-        j++;
-        if (i == pocet_zaznamov)
-        {
-            break;
-        }
-        switch (j)
-        {
-        case 1:
-            free((*id)[i]);
-            break;
-        
-        case 2:
-            free((*poz)[i]);
-            break;
-        case 3:
-            free((*velic)[i]);
-            break;
-
-        case 4:
-            free((*val)[i]);
-            break;
-
-        case 5:
-            free((*time)[i]);
-            break;
-
-        case 6:
-            free((*date)[i]);
-            i++;
-            j=0;
-            break;
-        }
-    }
-}
-
-
-void k(FILE **fptr_1, FILE** fptr_2, int pocet_zaznamov, char*** id, char*** poz, char*** velic, char*** val, char*** time, char*** date){
-    dealokacia_polí(pocet_zaznamov, id, poz, velic, val, time, date);
-    free(*id);
-    free(*poz);
-    free(*velic);
-    free(*val);
-    free(*time);
-    free(*date);
-    fclose(*fptr_1);
-    fclose(*fptr_2);
-    exit(1);
-}
-
 void n(FILE *fptr, int* pocet_zaznamov, int pocet_hodnot, char*** id, char*** poz, char*** velic, char*** val, char*** time, char*** date){
     if (fptr == NULL)
     {
@@ -170,7 +117,14 @@ void n(FILE *fptr, int* pocet_zaznamov, int pocet_hodnot, char*** id, char*** po
         *pocet_zaznamov = j;
         if (*id != NULL)
         {
-            dealokacia_polí(*pocet_zaznamov, id, poz, velic, val, time, date);
+            for (int i = 0; i < *pocet_zaznamov; i++) {
+                free((*id)[i]);
+                free((*poz)[i]);
+                free((*velic)[i]);
+                free((*val)[i]);
+                free((*time)[i]);
+                free((*date)[i]);
+            }
         }
         
         fseek(fptr, 0, SEEK_SET);
@@ -180,20 +134,6 @@ void n(FILE *fptr, int* pocet_zaznamov, int pocet_hodnot, char*** id, char*** po
         *val = (char**)malloc(sizeof(char*)*(*pocet_zaznamov));
         *time = (char**)malloc(sizeof(char*)*(*pocet_zaznamov));
         *date = (char**)malloc(sizeof(char*)*(*pocet_zaznamov));
-        /*
-        Difference between strdup and strcpy?
-        Both copy a string. strcpy wants a buffer to copy into. 
-        strdup allocates a buffer using malloc().
-        for (i = 0; i < *pocet_zaznamov; i++)
-        {
-            (*id)[i] = (char*)malloc(sizeof(char) * 50);
-            (*poz)[i] = (char*)malloc(sizeof(char) * 50);
-            (*velic)[i] = (char*)malloc(sizeof(char) * 50);
-            (*val)[i] = (char*)malloc(sizeof(char) * 50);
-            (*time)[i] = (char*)malloc(sizeof(char) * 50);
-            (*date)[i] = (char*)malloc(sizeof(char) * 50);
-        }
-        */
         j = 0;
         i = 0;
         while (1)
@@ -253,7 +193,7 @@ void c(FILE** fptr, int pocet_zaznamov, char** id, char** date){
     {
         printf("Polia nie su vytvorene.\n");
     }else{
-        int i = 0, j = 0, match = 1, rozdiel_m, period, ciach[3], stored[3], ciach_id_count = 0, zaciatok_hladania = 0;
+        int i = 0, j = 0, match = 1, rozdiel_m, period, ciach[3], stored[3], ciach_id_count = 0, zaciatok_hladania = 0, zapis = 0;
         char datastorage[50], id_storage[50];
         char** ciach_id = (char**)malloc(sizeof(char*)*pocet_zaznamov); //id ciachovania
         printf("Zadajte číslo reprezentujúce rozdiel mesiacov ciachovaní a v meraní...\n");
@@ -298,12 +238,14 @@ void c(FILE** fptr, int pocet_zaznamov, char** id, char** date){
                         rozdiel_m = stored[1]-ciach[1];//odcitanie
                         if (rozdiel_m > period)
                         {
+                            zapis++;
                             printf("ID. mer. modulu [%s] má %d mesiacov po ciachovani\n", id[i], rozdiel_m);            
                         }
                     }
                     if (stored[0]>ciach[0])
                     {
                         rozdiel_m = 12-ciach[1]+stored[1];
+                        zapis++;
                         printf("ID. mer. modulu [%s] má %d mesiacov po ciachovani\n", id[i], rozdiel_m);
                     }
                     match = 1;
@@ -343,27 +285,19 @@ void c(FILE** fptr, int pocet_zaznamov, char** id, char** date){
             match = 0;
         }
         
-        
-        printf("Data su korektne\n");
+        if (zapis == 0)
+        {
+            printf("Data su korektne\n");
+        }
     }
 }
 
-void s(FILE* fptr, int pocet_zaznamov, char** id, char** velic, char** poz, char** val, char** time, char** date){
-    /*
-    po aktivovani nacita ID |+
-    nacita vel |+
-    vytvori nove pole hodnot kde su zoradene ↑
-    vypise zoradene hodnoty do suboru s nazvom vystup_S.txt v tvare: |+
-    ak polia neboli vytvorené - hlaska |+
-    ak pre vstup neex. zaznam - hlaska |+
-    ak sa nepodari otvorit/zatvorit subor - hlaska |+
-    */
+void s(FILE** fptr, int pocet_zaznamov, char** id, char** velic, char** poz, char** val, char** time, char** date){
     char input_id[6], input_velic[3];
     int pocet_nacitanych = 0, j = 0;
     char*** sorted = (char***)malloc(sizeof(char**)*6);
-    char*** assist_array = (char***)malloc(sizeof(char**)*6);
-    fptr = fopen("vystup_S.txt", "w");
-    if (fptr == NULL)
+    *fptr = fopen("vystup_S.txt", "w");
+    if (*fptr == NULL)
     {
         printf("Pre dany vstup nie je vytvoreny txt subor");
         return;
@@ -402,88 +336,70 @@ void s(FILE* fptr, int pocet_zaznamov, char** id, char** velic, char** poz, char
     }
     if (pocet_nacitanych == 0)
     {
-        fprintf(fptr, "%c", 'c');
+        fprintf(*fptr, "%c", 'c');
         printf("Pre dany vstup neexistuju zaznamy\n");
     }else{
-        //sorting algorythm due to date and time
         j = 0;
-        int year[2], month[2], day[2], hour[2], minute[2];
-        int pocitadlo = pocet_nacitanych - 1, zaciatok = 0;//zaciatok sa mení, ak pociatocny udaj nebol vacsi nez prvy porovnavany udaj
-        int nova_pozicia;
-        //bubble sorting algorythm
-        for (int i = 0; i < pocitadlo; i++)//hlavny cyklus, iterujeme sorted polom
+        int date[2],  time[2];
+        int pocitadlo = pocet_nacitanych - 1, zaciatok = 0, akt_poz;//zaciatok sa mení, ak pociatocny udaj nebol vacsi nez prvy porovnavany udaj
+        int pozicie[pocet_nacitanych];
+        int i = 0;
+        
+        for (int i = 0; i < (pocet_nacitanych-1); i++)
         {
-            nova_pozicia = 0;
-            date_split(sorted[5][zaciatok], &year[0], &month[0], &day[0]);//priradenie hodnot do jednotlivych zoznamov
-            time_split(sorted[4][zaciatok], &hour[0], &minute[0]);
-            for (int j = zaciatok; j < pocitadlo; j++)
+            for (int k = 0; k < (pocet_nacitanych-1) - i; k++)
             {
-                date_split(sorted[5][j+1], &year[1], &month[1], &day[1]);
-                time_split(sorted[5][j+1], &hour[1], &minute[1]);
-                if (year[0]>year[1])
+                if ((atoi(sorted[5][k]) > atoi(sorted[5][k+1])) || ((atoi(sorted[5][k]) == atoi(sorted[5][k+1])) && (atoi(sorted[4][k]) > atoi(sorted[4][k+1]))))
                 {
-                    nova_pozicia = (j+1);
-                }else if (month[0]>month[1])
-                {
-                    nova_pozicia = (j+1);
-                }else if (day[0]>day[1])
-                {
-                    nova_pozicia = (j+1);
-                }else if (hour[0] > hour[1])
-                {
-                    nova_pozicia = (j+1);
-                }else if (minute[0]>minute[1])
-                {
-                    nova_pozicia = (j+1);
-                }
+                    for (int x = 0; x < 6; x++)
+                    {
+                        char* tempor = sorted[x][k];
+                        sorted[x][k] = sorted[x][k+1];
+                        sorted[x][k+1] = tempor;
+                    }   
+                }   
             }
-            if (nova_pozicia == zaciatok)
-            {
-                zaciatok++;
-            }else{
-
-            }
-
-            
-            
         }
         
+
         for (int i = 0; i < pocet_nacitanych; i++)//vypis do suboru
         {
             //delenie pozicie na lat a long
-            char lat[8], lon[8];
-            for (int j = 0; j < 7; j++)
+            char** vypis_pozicie = (char**)malloc(sizeof(char*)*2); 
+            vypis_pozicie[0] = (char*)malloc(sizeof(char)*8);
+            vypis_pozicie[1] = (char*)malloc(sizeof(char)*8);
+            for (int j = 0; j < 14; j++)
             {
-                lat[j] = (sorted[1][i])[j];
+                if (j<7)
+                {
+                    vypis_pozicie[0][j] = poz[i][j];
+                }else{
+                    vypis_pozicie[1][j - 7] = poz[i][j];
+                }
             }
-            for (int j = 7; j < 14; j++)
-            {
-                lon[j] = (sorted[1][i])[j];
-            }
-            fprintf(fptr, "%s%s\t%.5lf\t%s\t%s", sorted[5][i], sorted[4][i], atof(sorted[3][i]), lat, lon);//dokonci...
-        }
-        
+            vypis_pozicie[0][7] = '\0';
+            vypis_pozicie[1][7] = '\0';
+            fprintf(*fptr, "%s%s\t%.5lf\t%s\t%s\n", sorted[5][i], sorted[4][i], atof(sorted[3][i]), vypis_pozicie[0], vypis_pozicie[1]);
+            free(vypis_pozicie[0]);
+            free(vypis_pozicie[1]);
+            free(vypis_pozicie);
+        }    
     }
 
     //cistenie polí na konci funkcie
-    for (int i = 0; i < pocet_zaznamov; i++)
+    for (int i = 0; i < 6; i++)
     {
-        free(sorted[i]);
+        for (int x = 0; x < pocet_nacitanych; x++)
+        {
+            free(sorted[i][x]);
+        }  
     }
-    free(sorted);
-    for (int i = 0; i < 2; i++)
-    {
-        free(assist_array[i]);
-    }
-    free(assist_array);
     free(sorted);
     //uzatvorenie txt
-    if (fclose(fptr) == EOF)
+    if (fclose(*fptr) == EOF)
     {
         printf("Pre dany vstup nie je vytvoreny txt subor");
     }
-    
-
 }
 
 int main(void){
@@ -513,7 +429,7 @@ int main(void){
             break;
 
         case 's':
-            /* code */
+            s(&ptr_sort, pocet_zaznamov, id, velic, poz, val, time, date);
             break;
 
         case 'h':
@@ -525,7 +441,23 @@ int main(void){
             break;
         
         case 'k':
-            k(&ptr_dataloger, &ptr_ciachovanie, pocet_zaznamov, &id, &poz, &velic, &val, &time, &date);
+            for (int i = 0; i < pocet_zaznamov; i++) {
+                free(id[i]);
+                free(poz[i]);
+                free(velic[i]);
+                free(val[i]);
+                free(time[i]);
+                free(date[i]);
+            }
+            free(id);
+            free(poz);
+            free(velic);
+            free(val);
+            free(time);
+            free(date);
+            fclose(ptr_ciachovanie);
+            fclose(ptr_dataloger);
+            exit(1);
             break;
         default:
             printf("Zadali ste nedefinovaný príkaz, skúste to prosím znovu...\n");
