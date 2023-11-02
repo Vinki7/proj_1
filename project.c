@@ -390,32 +390,34 @@ void z(int* pocet_zaznamov, char*** id, char*** poz, char*** velic, char*** val,
     int removed_records = 0;
 
     for (int current_index = 0; current_index < *pocet_zaznamov; current_index++) {
-        if (strcmp(vlozene_id, (*id)[current_index]) == 0) {
-            // Free memory for the records being removed
-            free((*id)[current_index]);
-            free((*poz)[current_index]);
-            free((*velic)[current_index]);
-            free((*val)[current_index]);
-            free((*time)[current_index]);
-            free((*date)[current_index]);
-            
-            // Shift remaining records to fill the gap
-            for (int i = current_index; i < *pocet_zaznamov - 1; i++) {
-                (*id)[i] = (*id)[i + 1];
-                (*poz)[i] = (*poz)[i + 1];
-                (*velic)[i] = (*velic)[i + 1];
-                (*val)[i] = (*val)[i + 1];
-                (*time)[i] = (*time)[i + 1];
-                (*date)[i] = (*date)[i + 1];
-            }
+        if (*id == NULL || *poz == NULL || *velic == NULL || *val == NULL || *time == NULL || *date == NULL)
+        {
+            printf("Polia nie su vytvorene\n");
+        }else{
+        
+            if (strcmp(vlozene_id, (*id)[current_index]) == 0) {
+                free((*id)[current_index]);
+                free((*poz)[current_index]);
+                free((*velic)[current_index]);
+                free((*val)[current_index]);
+                free((*time)[current_index]);
+                free((*date)[current_index]);
+                
+                for (int i = current_index; i < *pocet_zaznamov - 1; i++) {
+                    (*id)[i] = (*id)[i + 1];
+                    (*poz)[i] = (*poz)[i + 1];
+                    (*velic)[i] = (*velic)[i + 1];
+                    (*val)[i] = (*val)[i + 1];
+                    (*time)[i] = (*time)[i + 1];
+                    (*date)[i] = (*date)[i + 1];
+                }
 
-            // Decrease the count of records
-            (*pocet_zaznamov)--;
-            removed_records++;
+                current_index--;
+                (*pocet_zaznamov)--;
+                removed_records++;
+            }
         }
     }
-
-    // After removing records, reallocate memory for the arrays
     *id = (char**)realloc(*id, (*pocet_zaznamov) * sizeof(char*));
     *poz = (char**)realloc(*poz, (*pocet_zaznamov) * sizeof(char*));
     *velic = (char**)realloc(*velic, (*pocet_zaznamov) * sizeof(char*));
