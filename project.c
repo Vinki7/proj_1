@@ -165,6 +165,26 @@ void time_split(char *string_time, int* hour, int* minute){
     *minute = atoi(string_time)%100;
 }
 
+void min_max(char** arr, int *min, int *max, int pocet){
+    for (int i = 0; i < pocet; i++)
+    {
+        float prve_porovnavane = atof(arr[i]), druhe_porovnavane = atof(arr[i+1]);
+        if (prve_porovnavane < druhe_porovnavane)
+        {
+            *min = prve_porovnavane;
+            *max = druhe_porovnavane;
+        }
+        if (prve_porovnavane > druhe_porovnavane)
+        {
+            *min = druhe_porovnavane;
+            *max = prve_porovnavane;
+        }
+        
+        
+    }
+    
+}
+
 void c(FILE** fptr, int pocet_zaznamov, char** id, char** date){
     if (id == NULL)//overenie existencie polí
     {
@@ -426,6 +446,50 @@ void z(int* pocet_zaznamov, char*** id, char*** poz, char*** velic, char*** val,
     *date = (char**)realloc(*date, (*pocet_zaznamov) * sizeof(char*));
 
     printf("Vymazalo sa: %d zaznamov!\n", removed_records);
+}
+
+void h(int pocet_zaznamov, char** velic, char** val){
+    if (velic == NULL || val == NULL)
+    {
+        printf("Polia nie su vytvorene\n");
+    }else{
+        char **rm[pocet_zaznamov], **rd[pocet_zaznamov], **ro[pocet_zaznamov];
+        int rm_index = 0, rd_index = 0, ro_index = 0;
+        int min, max;
+        for (int i = 0; i < pocet_zaznamov; i++)
+        {
+            if(strcmp(velic[i], "RM")==0){
+                rm[rm_index] = strdup(val[i]);
+                rm_index++;
+            }
+            if (strcmp(velic[i], "RD")==0)
+            {
+                rd[rd_index] = strdup(val[i]);
+                rd_index++;
+            }
+            if (strcmp(velic[i], "RO")==0)
+            {
+                ro[ro_index] = strdup(val[i]);
+                ro_index++;
+            }
+        }
+        printf("Typ mer. vel.\tPocetnost\tMinimum\tMaximum\n");
+        if (rm_index != 0)
+        {
+            min_max(rm, &min, &max, rm_index);
+            printf("RM\t\t%d\t\t%.2f\t\t%.2f\n", (rm_index-1), min, max);
+        }
+        if (rd_index != 0)
+        {
+            min_max(rd, &min, &max, rd_index);
+            printf("RD\t\t%d\t\t%.2f\t\t%.2f\n", (rd_index-1), min, max);
+        }
+        if (ro_index != 0)
+        {
+            min_max(ro, &min, &max, ro_index);
+            printf("RO\t\t%d\t\t%.2f\t\t%.2f\n", (ro_index-1), min, max);
+        }
+    }
 }
 
 int main(void){
