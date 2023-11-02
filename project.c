@@ -55,37 +55,15 @@ void v(FILE** fptr, int pocet_zaznamov, char** id, char** poz, char** velic, cha
     }else{
         i = 0;
         int j = 0;
-        while (j < pocet_zaznamov)
+        for(j = 0; j < pocet_zaznamov; j++)
         {
-            i++;
-            switch (i)
-            {
-            case 1:
-                printf("ID mer. modulu: %s\n", (id)[j]);
-                break;
-            
-            case 2:
-                printf("Pozicia modulu: %s\n", (poz)[j]);
-                break;
-            
-            case 3:
-                printf("Typ mer. veliciny: %s\n", (velic)[j]);
-                break;
-            
-            case 4:
-                printf("Hodnota: %s\n", (val)[j]);
-                break;
-            
-            case 5:
-                printf("Cas merania: %s\n", (time)[j]);
-                break;
-            case 6:
-                printf("Datum merania: %s\n", (date)[j]);
-                i = 0;
-                j++;
-                printf("\n");
-                break;
-            }
+            printf("ID mer. modulu: %s\n", (id)[j]);
+            printf("Pozicia modulu: %s\n", (poz)[j]);
+            printf("Typ mer. veliciny: %s\n", (velic)[j]);
+            printf("Hodnota: %s\n", (val)[j]);
+            printf("Cas merania: %s\n", (time)[j]);
+            printf("Datum merania: %s\n", (date)[j]);
+            printf("\n");
         }
     }
     fseek(*fptr, 0, SEEK_SET);
@@ -399,6 +377,18 @@ void s(FILE** fptr, int pocet_zaznamov, char** id, char** velic, char** poz, cha
     {
         printf("Pre dany vstup nie je vytvoreny txt subor");
     }
+}
+
+void z(char*** id, char*** poz, char*** velic, char*** val, char*** time, char*** date){
+    char vlozene_id[10];
+    printf("Zadajte ID mer. modulu pre vymazanie záznamov\n");
+    scanf("%s", vlozene_id);
+    int current_index = 0;
+    while (1)
+    {
+        /* code */
+    }
+    
 }
 
 int main(void){
