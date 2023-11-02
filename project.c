@@ -379,16 +379,51 @@ void s(FILE** fptr, int pocet_zaznamov, char** id, char** velic, char** poz, cha
     }
 }
 
-void z(char*** id, char*** poz, char*** velic, char*** val, char*** time, char*** date){
+void z(int* pocet_zaznamov, char*** id, char*** poz, char*** velic, char*** val, char*** time, char*** date) {
     char vlozene_id[10];
+    char **new_array;
+
     printf("Zadajte ID mer. modulu pre vymazanie záznamov\n");
     scanf("%s", vlozene_id);
-    int current_index = 0;
-    while (1)
-    {
-        /* code */
-    }
     
+    int povodny_pocet_zaznamov = *pocet_zaznamov;
+    int removed_records = 0;
+
+    for (int current_index = 0; current_index < *pocet_zaznamov; current_index++) {
+        if (strcmp(vlozene_id, (*id)[current_index]) == 0) {
+            // Free memory for the records being removed
+            free((*id)[current_index]);
+            free((*poz)[current_index]);
+            free((*velic)[current_index]);
+            free((*val)[current_index]);
+            free((*time)[current_index]);
+            free((*date)[current_index]);
+            
+            // Shift remaining records to fill the gap
+            for (int i = current_index; i < *pocet_zaznamov - 1; i++) {
+                (*id)[i] = (*id)[i + 1];
+                (*poz)[i] = (*poz)[i + 1];
+                (*velic)[i] = (*velic)[i + 1];
+                (*val)[i] = (*val)[i + 1];
+                (*time)[i] = (*time)[i + 1];
+                (*date)[i] = (*date)[i + 1];
+            }
+
+            // Decrease the count of records
+            (*pocet_zaznamov)--;
+            removed_records++;
+        }
+    }
+
+    // After removing records, reallocate memory for the arrays
+    *id = (char**)realloc(*id, (*pocet_zaznamov) * sizeof(char*));
+    *poz = (char**)realloc(*poz, (*pocet_zaznamov) * sizeof(char*));
+    *velic = (char**)realloc(*velic, (*pocet_zaznamov) * sizeof(char*));
+    *val = (char**)realloc(*val, (*pocet_zaznamov) * sizeof(char*));
+    *time = (char**)realloc(*time, (*pocet_zaznamov) * sizeof(char*));
+    *date = (char**)realloc(*date, (*pocet_zaznamov) * sizeof(char*));
+
+    printf("Vymazalo sa: %d zaznamov!\n", removed_records);
 }
 
 int main(void){
@@ -426,7 +461,7 @@ int main(void){
             break;
         
         case 'z':
-            /* code */
+            z(&pocet_zaznamov, &id, &poz, &velic, &val, &time, &date);
             break;
         
         case 'k':
