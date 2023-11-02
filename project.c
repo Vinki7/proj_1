@@ -9,7 +9,7 @@ void v(FILE** fptr, int pocet_zaznamov, char** id, char** poz, char** velic, cha
         *fptr = fopen("dataloger.txt", "r");
         if (*fptr == NULL){
             printf("Neotvoreny subor\n");
-            exit(1);
+            return;
         }
     }
     int i = 0, len, n_of_scanned;
@@ -53,7 +53,6 @@ void v(FILE** fptr, int pocet_zaznamov, char** id, char** poz, char** velic, cha
         }
         fseek(*fptr, 0, SEEK_SET);
     }else{
-        fseek(*fptr, 0, SEEK_SET);
         i = 0;
         int j = 0;
         while (j < pocet_zaznamov)
