@@ -165,24 +165,21 @@ void time_split(char *string_time, int* hour, int* minute){
     *minute = atoi(string_time)%100;
 }
 
-void min_max(char** arr, int *min, int *max, int pocet){
-    for (int i = 0; i < pocet; i++)
+void min_max(char** arr, float *min, float *max, int pocet){
+    *min = atof(arr[0]);
+    *max = atof(arr[0]);
+    for (int i = 1; i < pocet; i++)
     {
-        float prve_porovnavane = atof(arr[i]), druhe_porovnavane = atof(arr[i+1]);
-        if (prve_porovnavane < druhe_porovnavane)
+        float aktualna_hodnota = atof(arr[i]);
+        if (aktualna_hodnota < *min)
         {
-            *min = prve_porovnavane;
-            *max = druhe_porovnavane;
+            *min = aktualna_hodnota;
         }
-        if (prve_porovnavane > druhe_porovnavane)
+        if (aktualna_hodnota > *max)
         {
-            *min = druhe_porovnavane;
-            *max = prve_porovnavane;
+            *max = aktualna_hodnota;
         }
-        
-        
     }
-    
 }
 
 void c(FILE** fptr, int pocet_zaznamov, char** id, char** date){
@@ -453,22 +450,17 @@ void h(int pocet_zaznamov, char** velic, char** val){
     {
         printf("Polia nie su vytvorene\n");
     }else{
-        char **rm[pocet_zaznamov], **rd[pocet_zaznamov], **ro[pocet_zaznamov];
+        char *rm[pocet_zaznamov], *rd[pocet_zaznamov], *ro[pocet_zaznamov];
         int rm_index = 0, rd_index = 0, ro_index = 0;
-        int min, max;
-        for (int i = 0; i < pocet_zaznamov; i++)
-        {
-            if(strcmp(velic[i], "RM")==0){
+        float min, max;
+        for (int i = 0; i < pocet_zaznamov; i++) {
+            if (strcmp(velic[i], "RM") == 0) {
                 rm[rm_index] = strdup(val[i]);
                 rm_index++;
-            }
-            if (strcmp(velic[i], "RD")==0)
-            {
+            } else if (strcmp(velic[i], "RD") == 0) {
                 rd[rd_index] = strdup(val[i]);
                 rd_index++;
-            }
-            if (strcmp(velic[i], "RO")==0)
-            {
+            } else if (strcmp(velic[i], "RO") == 0) {
                 ro[ro_index] = strdup(val[i]);
                 ro_index++;
             }
@@ -477,17 +469,27 @@ void h(int pocet_zaznamov, char** velic, char** val){
         if (rm_index != 0)
         {
             min_max(rm, &min, &max, rm_index);
-            printf("RM\t\t%d\t\t%.2f\t\t%.2f\n", (rm_index-1), min, max);
+            printf("RM\t\t%d\t\t%.2f\t\t%.2f\n", (rm_index), min, max);
         }
         if (rd_index != 0)
         {
             min_max(rd, &min, &max, rd_index);
-            printf("RD\t\t%d\t\t%.2f\t\t%.2f\n", (rd_index-1), min, max);
+            printf("RD\t\t%d\t\t%.2f\t\t%.2f\n", (rd_index), min, max);
         }
         if (ro_index != 0)
         {
             min_max(ro, &min, &max, ro_index);
-            printf("RO\t\t%d\t\t%.2f\t\t%.2f\n", (ro_index-1), min, max);
+            printf("RO\t\t%d\t\t%.2f\t\t%.2f\n", (ro_index), min, max);
+        }
+
+        for (int i = 0; i < rm_index; i++) {
+            free(rm[i]);
+        }
+        for (int i = 0; i < rd_index; i++) {
+            free(rd[i]);
+        }
+        for (int i = 0; i < ro_index; i++) {
+            free(ro[i]);
         }
     }
 }
@@ -523,7 +525,7 @@ int main(void){
             break;
 
         case 'h':
-            /* code */
+            h(pocet_zaznamov, velic, val);
             break;
         
         case 'z':
