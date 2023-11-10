@@ -2,12 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct
+// linked list for id
+typedef struct id_list
 {
     char *id;
-    char **ptr_id; 
-    ptr_id = &(id);
-}
+    struct id_list *next;
+} id_list_t;
+
 int main(void){
     printf("Zadajte príkaz:\n");
     char prikaz;
